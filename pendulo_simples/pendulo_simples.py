@@ -90,35 +90,16 @@ def simular_rk4():
     return theta, omega
 
 
-def plotar_comparativo(theta_def, omega_def, theta_euler, omega_euler, theta_rk4, omega_rk4):
-    fig, axs = plt.subplots(1, 3, figsize=(16, 4))
-
-    axs[0].plot(t, theta_def, label="Def. derivada", linewidth=1.2)
-    axs[0].plot(t, theta_euler, label="Euler", linewidth=1.2)
-    axs[0].plot(t, theta_rk4, label="RK4", linewidth=2)
-    axs[0].set_title("Comparacao de theta(t)")
-    axs[0].set_xlabel("tempo (s)")
-    axs[0].set_ylabel("theta (rad)")
-    axs[0].grid(alpha=0.3)
-    axs[0].legend()
-
-    axs[1].plot(t, omega_def, label="Def. derivada", linewidth=1.2)
-    axs[1].plot(t, omega_euler, label="Euler", linewidth=1.2)
-    axs[1].plot(t, omega_rk4, label="RK4", linewidth=2)
-    axs[1].set_title("Comparacao de omega(t)")
-    axs[1].set_xlabel("tempo (s)")
-    axs[1].set_ylabel("omega (rad/s)")
-    axs[1].grid(alpha=0.3)
-    axs[1].legend()
-
-    axs[2].plot(t, np.abs(theta_rk4 - theta_def), label="|RK4 - Def. derivada|")
-    axs[2].plot(t, np.abs(theta_rk4 - theta_euler), label="|RK4 - Euler|")
-    axs[2].set_title("Erro absoluto contra RK4")
-    axs[2].set_xlabel("tempo (s)")
-    axs[2].set_ylabel("erro")
-    axs[2].grid(alpha=0.3)
-    axs[2].legend()
-
+def plotar_comparativo(theta_def, theta_euler, theta_rk4):
+    fig, ax = plt.subplots(1, 1, figsize=(9, 4))
+    ax.plot(t, theta_def, label="Def. derivada", linewidth=1.2)
+    ax.plot(t, theta_euler, label="Euler", linewidth=1.2)
+    ax.plot(t, theta_rk4, label="RK4", linewidth=2)
+    ax.set_title("Comparacao de posicao angular theta(t)")
+    ax.set_xlabel("tempo (s)")
+    ax.set_ylabel("theta (rad)")
+    ax.grid(alpha=0.3)
+    ax.legend()
     plt.tight_layout()
     plt.show()
 
@@ -171,7 +152,7 @@ if __name__ == "__main__":
     mostrar_amostra("Euler", theta_euler, omega_euler)
     mostrar_amostra("RK4", theta_rk4, omega_rk4)
 
-    plotar_comparativo(theta_def, omega_def, theta_euler, omega_euler, theta_rk4, omega_rk4)
+    plotar_comparativo(theta_def, theta_euler, theta_rk4)
 
     # Animacao principal (troque o metodo aqui se quiser)
     animar_pendulo(theta_rk4, titulo="Pendulo - RK4")

@@ -25,10 +25,6 @@ def mostrar_amostra(nome, x, v, n=10):
         print(f"{i:2d}  {t[i]:6.3f}   {x[i]:10.6f}   {v[i]:10.6f}")
 
 
-def energia_total(x, v):
-    return 0.5 * m * v**2 + 0.5 * k * x**2
-
-
 # BLOCO 2 - Metodo por definicao de derivada
 def simular_definicao_derivada():
     n = len(t)
@@ -93,40 +89,16 @@ def simular_rk4():
     return x, v
 
 
-def plotar_comparativo(x_def, v_def, x_euler, v_euler, x_rk4, v_rk4):
-    E_def = energia_total(x_def, v_def)
-    E_euler = energia_total(x_euler, v_euler)
-    E_rk4 = energia_total(x_rk4, v_rk4)
-
-    fig, axs = plt.subplots(1, 3, figsize=(16, 4))
-
-    axs[0].plot(t, x_def, label="Def. derivada", linewidth=1.2)
-    axs[0].plot(t, x_euler, label="Euler", linewidth=1.2)
-    axs[0].plot(t, x_rk4, label="RK4", linewidth=2)
-    axs[0].set_title("Comparacao de x(t)")
-    axs[0].set_xlabel("tempo (s)")
-    axs[0].set_ylabel("x (m)")
-    axs[0].grid(alpha=0.3)
-    axs[0].legend()
-
-    axs[1].plot(t, v_def, label="Def. derivada", linewidth=1.2)
-    axs[1].plot(t, v_euler, label="Euler", linewidth=1.2)
-    axs[1].plot(t, v_rk4, label="RK4", linewidth=2)
-    axs[1].set_title("Comparacao de v(t)")
-    axs[1].set_xlabel("tempo (s)")
-    axs[1].set_ylabel("v (m/s)")
-    axs[1].grid(alpha=0.3)
-    axs[1].legend()
-
-    axs[2].plot(t, E_def, label="Def. derivada")
-    axs[2].plot(t, E_euler, label="Euler")
-    axs[2].plot(t, E_rk4, label="RK4")
-    axs[2].set_title("Energia total")
-    axs[2].set_xlabel("tempo (s)")
-    axs[2].set_ylabel("E (J)")
-    axs[2].grid(alpha=0.3)
-    axs[2].legend()
-
+def plotar_comparativo(x_def, x_euler, x_rk4):
+    fig, ax = plt.subplots(1, 1, figsize=(9, 4))
+    ax.plot(t, x_def, label="Def. derivada", linewidth=1.2)
+    ax.plot(t, x_euler, label="Euler", linewidth=1.2)
+    ax.plot(t, x_rk4, label="RK4", linewidth=2)
+    ax.set_title("Comparacao de posicao x(t)")
+    ax.set_xlabel("tempo (s)")
+    ax.set_ylabel("x (m)")
+    ax.grid(alpha=0.3)
+    ax.legend()
     plt.tight_layout()
     plt.show()
 
@@ -200,7 +172,7 @@ if __name__ == "__main__":
     mostrar_amostra("Euler", x_euler, v_euler)
     mostrar_amostra("RK4", x_rk4, v_rk4)
 
-    plotar_comparativo(x_def, v_def, x_euler, v_euler, x_rk4, v_rk4)
+    plotar_comparativo(x_def, x_euler, x_rk4)
 
     # Animacao principal (troque o metodo aqui se quiser)
     animar_massa_mola(x_rk4, titulo="Massa-mola - RK4")

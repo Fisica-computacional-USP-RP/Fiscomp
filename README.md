@@ -15,7 +15,7 @@ Computational physics projects with didactic simulations for monitoria.
 2. simulacao com Euler
 3. simulacao com Runge-Kutta 4 (RK4)
 4. saida crua (tabela inicial)
-5. graficos comparativos
+5. graficos comparativos de posicao
 6. animacao no proprio notebook
 
 ## Abrir direto no Colab
