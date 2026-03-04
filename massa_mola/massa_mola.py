@@ -9,98 +9,81 @@ from matplotlib.animation import FuncAnimation
 # ============================================================
 
 # BLOCO 1 - Parametros
-m = 1.0
-k = 1.0
-x0 = 1.0
-v0 = 0.0
-dt = 0.01
-t_final = 20.0
-t = np.arange(0.0, t_final + dt, dt)
+M = 1.0
+K = 1.0
+X0 = 1.0
+V0 = 0.0
+DT = 0.01
+T_FINAL = 20.0
+T = np.arange(0.0, T_FINAL + DT, DT)
 
 
-def mostrar_amostra(nome, x, v, n=10):
+def mostrar_amostra(nome, x, n=10):
+    """Tabela curta somente com tempo e posicao."""
     print(f"\nSaida numerica - {nome}")
-    print(" i   t(s)      x(m)        v(m/s)")
-    for i in range(min(n, len(t))):
-        print(f"{i:2d}  {t[i]:6.3f}   {x[i]:10.6f}   {v[i]:10.6f}")
+    print(" i   t(s)      x(m)")
+    for i in range(min(n, len(T))):
+        print(f"{i:2d}  {T[i]:6.3f}   {x[i]:10.6f}")
 
 
-# BLOCO 2 - Metodo por definicao de derivada
+# BLOCO 2 - Definicao de derivada (diferenca finita de 2a ordem)
 def simular_definicao_derivada():
-    n = len(t)
+    n = len(T)
     x = np.zeros(n)
-    v = np.zeros(n)
 
-    x[0] = x0
-    a0 = -(k / m) * x0
-    x[1] = x0 + v0 * dt + 0.5 * a0 * dt**2
+    x[0] = X0
+    a0 = -(K / M) * X0
+    x[1] = X0 + V0 * DT + 0.5 * a0 * DT**2
 
     for i in range(1, n - 1):
-        a_i = -(k / m) * x[i]
-        x[i + 1] = 2 * x[i] - x[i - 1] + a_i * dt**2
+        a_i = -(K / M) * x[i]
+        x[i + 1] = 2 * x[i] - x[i - 1] + a_i * DT**2
 
-    v[0] = v0
-    v[1:-1] = (x[2:] - x[:-2]) / (2 * dt)
-    v[-1] = (x[-1] - x[-2]) / dt
-    return x, v
+    return x
 
 
-# BLOCO 3 - Metodo de Euler
+# BLOCO 3 - Euler
 def simular_euler():
-    n = len(t)
+    n = len(T)
     x = np.zeros(n)
     v = np.zeros(n)
 
-    x[0] = x0
-    v[0] = v0
+    x[0] = X0
+    v[0] = V0
 
     for i in range(n - 1):
-        a = -(k / m) * x[i]
-        v[i + 1] = v[i] + a * dt
-        x[i + 1] = x[i] + v[i] * dt
+        a = -(K / M) * x[i]
+        v[i + 1] = v[i] + a * DT
+        x[i + 1] = x[i] + v[i] * DT
 
-    return x, v
+    return x
 
 
-# BLOCO 4 - Metodo RK4
+# BLOCO 4 - RK4
 def derivadas(x, v):
-    return v, -(k / m) * x
+    return v, -(K / M) * x
 
 
 def simular_rk4():
-    n = len(t)
+    n = len(T)
     x = np.zeros(n)
     v = np.zeros(n)
 
-    x[0] = x0
-    v[0] = v0
+    x[0] = X0
+    v[0] = V0
 
     for i in range(n - 1):
         xi, vi = x[i], v[i]
 
         k1_x, k1_v = derivadas(xi, vi)
-        k2_x, k2_v = derivadas(xi + 0.5 * dt * k1_x, vi + 0.5 * dt * k1_v)
-        k3_x, k3_v = derivadas(xi + 0.5 * dt * k2_x, vi + 0.5 * dt * k2_v)
-        k4_x, k4_v = derivadas(xi + dt * k3_x, vi + dt * k3_v)
+        k2_x, k2_v = derivadas(xi + 0.5 * DT * k1_x, vi + 0.5 * DT * k1_v)
+        k3_x, k3_v = derivadas(xi + 0.5 * DT * k2_x, vi + 0.5 * DT * k2_v)
+        k4_x, k4_v = derivadas(xi + DT * k3_x, vi + DT * k3_v)
 
-        x[i + 1] = xi + (dt / 6.0) * (k1_x + 2 * k2_x + 2 * k3_x + k4_x)
-        v[i + 1] = vi + (dt / 6.0) * (k1_v + 2 * k2_v + 2 * k3_v + k4_v)
+        x[i + 1] = xi + (DT / 6.0) * (k1_x + 2 * k2_x + 2 * k3_x + k4_x)
+        v[i + 1] = vi + (DT / 6.0) * (k1_v + 2 * k2_v + 2 * k3_v + k4_v)
 
-    return x, v
-
-
-def plotar_comparativo(x_def, x_euler, x_rk4):
-    fig, ax = plt.subplots(1, 1, figsize=(9, 4))
-    ax.plot(t, x_def, label="Def. derivada", linewidth=1.2)
-    ax.plot(t, x_euler, label="Euler", linewidth=1.2)
-    ax.plot(t, x_rk4, label="RK4", linewidth=2)
-    ax.set_title("Comparacao de posicao x(t)")
-    ax.set_xlabel("tempo (s)")
-    ax.set_ylabel("x (m)")
-    ax.grid(alpha=0.3)
-    ax.legend()
-    plt.tight_layout()
-    plt.show()
+    return x
 
 
 def desenhar_mola(x_massa, x_parede=-1.2, espiras=12, amplitude=0.08, pontos=220):
@@ -116,63 +99,96 @@ def desenhar_mola(x_massa, x_parede=-1.2, espiras=12, amplitude=0.08, pontos=220
     return xs, ys
 
 
-def animar_massa_mola(x, titulo="Massa-mola", max_frames=400):
-    passo = max(1, len(t) // max_frames)
-    t_anim = t[::passo]
-    x_anim = x[::passo]
+def animar_aparato_e_curvas(x_aparato, x_def, x_euler, x_rk4, titulo="Massa-mola"):
+    """Esquerda: aparato massa-mola. Direita: 3 curvas de posicao sendo formadas."""
+    max_frames = 420
+    passo = max(1, len(T) // max_frames)
 
-    fig, (ax_mola, ax_xt) = plt.subplots(
-        2,
-        1,
-        figsize=(8, 7),
-        gridspec_kw={"height_ratios": [1.3, 1.0]},
-    )
+    t_anim = T[::passo]
+    xa = x_aparato[::passo]
+    xd = x_def[::passo]
+    xe = x_euler[::passo]
+    xr = x_rk4[::passo]
 
-    ax_mola.set_title(f"{titulo} - Mola oscilando")
-    ax_mola.set_xlabel("x (m)")
-    ax_mola.set_ylabel("y")
-    xmin = min(-1.3, np.min(x_anim) - 0.3)
-    xmax = max(1.3, np.max(x_anim) + 0.3)
-    ax_mola.set_xlim(xmin, xmax)
-    ax_mola.set_ylim(-0.4, 0.4)
-    ax_mola.grid(alpha=0.3)
-    ax_mola.axvline(-1.2, color="gray", lw=3)
+    fig, (ax_s, ax_g) = plt.subplots(1, 2, figsize=(12, 4.8))
+    fig.suptitle(titulo)
 
-    linha_mola, = ax_mola.plot([], [], color="tab:blue", lw=2)
-    massa, = ax_mola.plot([], [], "o", color="tab:red", ms=14)
+    # Painel esquerdo: aparato
+    ax_s.set_title("Aparato experimental: massa-mola")
+    ax_s.set_xlabel("x (m)")
+    ax_s.set_ylabel("y")
+    xmin = min(-1.3, np.min(xa) - 0.3)
+    xmax = max(1.3, np.max(xa) + 0.3)
+    ax_s.set_xlim(xmin, xmax)
+    ax_s.set_ylim(-0.4, 0.4)
+    ax_s.grid(alpha=0.3)
+    ax_s.axvline(-1.2, color="gray", lw=3)
 
-    ax_xt.set_title(f"{titulo} - Posicao x(t)")
-    ax_xt.set_xlabel("tempo (s)")
-    ax_xt.set_ylabel("x (m)")
-    ax_xt.set_xlim(0.0, t[-1])
-    margem = 0.1 * max(abs(np.min(x_anim)), abs(np.max(x_anim)), 1e-6)
-    ax_xt.set_ylim(np.min(x_anim) - margem, np.max(x_anim) + margem)
-    ax_xt.grid(alpha=0.3)
-    linha_xt, = ax_xt.plot([], [], color="tab:orange", lw=2)
+    linha_mola, = ax_s.plot([], [], color="tab:blue", lw=2)
+    massa, = ax_s.plot([], [], "o", color="tab:red", ms=14)
+
+    # Painel direito: 3 curvas em tempo real
+    amp = max(np.max(np.abs(np.concatenate([xd, xe, xr]))) * 1.25, 0.2)
+    ax_g.set_xlim(0, T[-1])
+    ax_g.set_ylim(-amp, amp)
+    ax_g.set_title("x(t): Def. derivada, Euler e RK4")
+    ax_g.set_xlabel("tempo (s)")
+    ax_g.set_ylabel("x (m)")
+    ax_g.grid(alpha=0.3)
+
+    linha_def, = ax_g.plot([], [], color="black", linestyle="--", linewidth=2.0, label="Def. derivada", zorder=4)
+    linha_eul, = ax_g.plot([], [], color="tab:orange", linewidth=1.8, label="Euler", zorder=3)
+    linha_rk, = ax_g.plot([], [], color="tab:green", linewidth=1.8, label="RK4", zorder=2)
+
+    pt_def, = ax_g.plot([], [], "o", color="black", ms=4)
+    pt_eul, = ax_g.plot([], [], "o", color="tab:orange", ms=4)
+    pt_rk, = ax_g.plot([], [], "o", color="tab:green", ms=4)
+    ax_g.legend(loc="upper right")
+
+    def init():
+        linha_mola.set_data([], [])
+        massa.set_data([], [])
+        linha_def.set_data([], [])
+        linha_eul.set_data([], [])
+        linha_rk.set_data([], [])
+        pt_def.set_data([], [])
+        pt_eul.set_data([], [])
+        pt_rk.set_data([], [])
+        return linha_mola, massa, linha_def, linha_eul, linha_rk, pt_def, pt_eul, pt_rk
 
     def update(i):
-        xs, ys = desenhar_mola(x_anim[i])
+        xs, ys = desenhar_mola(xa[i])
         linha_mola.set_data(xs, ys)
-        massa.set_data([x_anim[i]], [0.0])
-        linha_xt.set_data(t_anim[: i + 1], x_anim[: i + 1])
-        return linha_mola, massa, linha_xt
+        massa.set_data([xa[i]], [0.0])
 
-    ani = FuncAnimation(fig, update, frames=len(x_anim), interval=30, blit=False)
+        tt = t_anim[: i + 1]
+        yd = xd[: i + 1]
+        ye = xe[: i + 1]
+        yr = xr[: i + 1]
+
+        linha_def.set_data(tt, yd)
+        linha_eul.set_data(tt, ye)
+        linha_rk.set_data(tt, yr)
+
+        pt_def.set_data([tt[-1]], [yd[-1]])
+        pt_eul.set_data([tt[-1]], [ye[-1]])
+        pt_rk.set_data([tt[-1]], [yr[-1]])
+        return linha_mola, massa, linha_def, linha_eul, linha_rk, pt_def, pt_eul, pt_rk
+
+    ani = FuncAnimation(fig, update, frames=len(t_anim), init_func=init, interval=30, blit=False)
     fig._ani = ani
     plt.tight_layout()
     plt.show()
 
 
 if __name__ == "__main__":
-    x_def, v_def = simular_definicao_derivada()
-    x_euler, v_euler = simular_euler()
-    x_rk4, v_rk4 = simular_rk4()
+    x_def = simular_definicao_derivada()
+    x_euler = simular_euler()
+    x_rk4 = simular_rk4()
 
-    mostrar_amostra("Definicao de derivada", x_def, v_def)
-    mostrar_amostra("Euler", x_euler, v_euler)
-    mostrar_amostra("RK4", x_rk4, v_rk4)
+    mostrar_amostra("Definicao de derivada", x_def)
+    mostrar_amostra("Euler", x_euler)
+    mostrar_amostra("RK4", x_rk4)
 
-    plotar_comparativo(x_def, x_euler, x_rk4)
-
-    # Animacao principal (troque o metodo aqui se quiser)
-    animar_massa_mola(x_rk4, titulo="Massa-mola - RK4")
+    # Aparato animado com RK4; grafico do lado mostra as 3 curvas se formando.
+    animar_aparato_e_curvas(x_rk4, x_def, x_euler, x_rk4, titulo="Massa-mola: aparato + curvas")
