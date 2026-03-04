@@ -1,0 +1,20 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Ambiente local
+.venv/
+venv/
+.env
+
+# VS Code
+.vscode/
+
+# Dados temporarios
+*.tmp
