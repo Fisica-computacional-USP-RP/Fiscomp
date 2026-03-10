@@ -2,6 +2,8 @@
 
 Computational physics materials for teaching numerical simulation in an introductory and didactic format.
 
+![Fiscomp cover](assets/fiscomp_cover.png)
+
 ## Current structure
 - `pendulo_simples/`
   - `pendulo_simples.py`
@@ -19,3 +21,4 @@ Computational physics materials for teaching numerical simulation in an introduc
 ## Notes
 - The `.py` files are intentionally documented in PT-BR.
 - Notebooks and repository documentation are in English.
+- `social_preview.png` is ready to upload in GitHub `Settings > General > Social preview`.
