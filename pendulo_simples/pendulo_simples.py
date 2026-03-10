@@ -1,22 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-# ============================================================
-# PENDULO SIMPLES
-# ============================================================
-# EDO do problema:
-#   theta'' + (g/L)*sin(theta) = 0
-#
-# Comparamos dois integradores:
-# 1) Euler-Cromer
-# 2) Runge-Kutta de 4a ordem (RK4)
-#
-# A saida final mostra apenas a simulacao numerica e o plot comparativo.
+from matplotlib.animation import FuncAnimation
 
 
-# --------------------------
-# BLOCO 1: PARAMETROS
-# --------------------------
 g = 9.81
 L = 1.0
 
@@ -29,9 +15,6 @@ t = np.arange(0.0, t_final + dt, dt)
 N = len(t)
 
 
-# --------------------------
-# BLOCO 2: EULER-CROMER
-# --------------------------
 def simular_euler():
     theta = np.zeros(N)
     omega = np.zeros(N)
@@ -47,9 +30,6 @@ def simular_euler():
     return theta, omega
 
 
-# --------------------------
-# BLOCO 3: RK4
-# --------------------------
 def derivadas(theta, omega):
     return omega, -(g / L) * np.sin(theta)
 
@@ -76,44 +56,78 @@ def simular_rk4():
     return theta, omega
 
 
-# --------------------------
-# BLOCO 4: SAIDA CRUA
-# --------------------------
 def mostrar_saida_numerica(nome_metodo, theta):
     print(f"\nSaida numerica - {nome_metodo}")
-    print(" i   t(s)    theta(rad)    theta/theta0")
+    print(" i   t(s)    theta(rad)")
     for i in range(10):
-        print(f"{i:2d}  {t[i]:6.3f}   {theta[i]:10.6f}   {theta[i] / theta0:11.6f}")
+        print(f"{i:2d}  {t[i]:6.3f}   {theta[i]:10.6f}")
 
 
-# --------------------------
-# BLOCO 5: PLOT COMPARATIVO
-# --------------------------
-def plotar_comparacao(theta_euler, theta_rk4):
-    theta_euler_n = theta_euler / theta0
-    theta_rk4_n = theta_rk4 / theta0
-    amp = 1.1 * max(np.max(np.abs(theta_euler_n)), np.max(np.abs(theta_rk4_n)), 1.0)
+def indices_animacao(total_pontos, max_frames=160):
+    return np.unique(np.linspace(0, total_pontos - 1, min(max_frames, total_pontos), dtype=int))
 
-    fig, ax = plt.subplots(figsize=(9, 4.8))
-    ax.plot(t, theta_euler_n, color="tab:orange", lw=2, label="Euler-Cromer")
-    ax.plot(t, theta_rk4_n, color="tab:green", lw=2, label="RK4")
-    ax.set_title("Pendulo simples: comparacao dos metodos")
-    ax.set_xlabel("tempo (s)")
-    ax.set_ylabel("theta(t)/theta0")
-    ax.set_xlim(0.0, t_final)
-    ax.set_ylim(-amp, amp)
-    ax.grid(alpha=0.3)
-    ax.legend(loc="upper right")
+
+def animar_pendulo(theta, nome_metodo):
+    x = L * np.sin(theta)
+    y = -L * np.cos(theta)
+    frames_anim = indices_animacao(N)
+    salto = max(1, frames_anim[1] - frames_anim[0]) if len(frames_anim) > 1 else 1
+    intervalo_ms = max(20, int(1000 * dt * salto))
+    amp = 1.1 * max(np.max(np.abs(theta)), abs(theta0))
+    margem = 0.22
+
+    fig, (ax_pendulo, ax_theta) = plt.subplots(1, 2, figsize=(12, 4.8))
+
+    ax_pendulo.set_title(f"Pendulo simples - {nome_metodo}")
+    ax_pendulo.set_xlabel("x (m)")
+    ax_pendulo.set_ylabel("y (m)")
+    ax_pendulo.set_xlim(-(L + margem), L + margem)
+    ax_pendulo.set_ylim(-(L + margem), 0.22)
+    ax_pendulo.set_aspect("equal", adjustable="box")
+    ax_pendulo.grid(alpha=0.3)
+    ax_pendulo.scatter([0.0], [0.0], color="black", s=28)
+
+    haste, = ax_pendulo.plot([], [], color="tab:green", lw=2.5)
+    massa, = ax_pendulo.plot([], [], "o", color="tab:green", ms=12)
+
+    ax_theta.set_title(f"{nome_metodo} - theta(t)")
+    ax_theta.set_xlabel("tempo (s)")
+    ax_theta.set_ylabel("theta (rad)")
+    ax_theta.set_xlim(0.0, t_final)
+    ax_theta.set_ylim(-amp, amp)
+    ax_theta.grid(alpha=0.3)
+    linha_theta, = ax_theta.plot([], [], color="tab:green", lw=2)
+
+    def init():
+        haste.set_data([], [])
+        massa.set_data([], [])
+        linha_theta.set_data([], [])
+        return haste, massa, linha_theta
+
+    def update(frame):
+        haste.set_data([0.0, x[frame]], [0.0, y[frame]])
+        massa.set_data([x[frame]], [y[frame]])
+        linha_theta.set_data(t[: frame + 1], theta[: frame + 1])
+        return haste, massa, linha_theta
+
+    ani = FuncAnimation(
+        fig,
+        update,
+        frames=frames_anim,
+        init_func=init,
+        interval=intervalo_ms,
+        blit=False,
+        cache_frame_data=False,
+    )
+    fig._ani = ani
     plt.tight_layout()
     plt.show()
+    return ani
 
 
-# --------------------------
-# BLOCO 6: EXECUCAO
-# --------------------------
 theta_euler, omega_euler = simular_euler()
 theta_rk4, omega_rk4 = simular_rk4()
 
 mostrar_saida_numerica("Euler-Cromer", theta_euler)
 mostrar_saida_numerica("Runge-Kutta 4", theta_rk4)
-plotar_comparacao(theta_euler, theta_rk4)
+anim_bonus = animar_pendulo(theta_rk4, "RK4")
