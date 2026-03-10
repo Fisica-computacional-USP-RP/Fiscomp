@@ -26,7 +26,7 @@ L = 1.0
 theta0 = np.deg2rad(20.0)
 omega0 = 0.0
 
-dt = 0.02
+dt = 0.01
 t_final = 10.0
 t = np.arange(0.0, t_final + dt, dt)
 N = len(t)
@@ -114,7 +114,8 @@ def animar_comparacao(theta_euler, theta_rk4):
     ax_pendulo.set_ylabel("y (m)")
     ax_pendulo.set_xlim(-1.2 * L, 1.2 * L)
     ax_pendulo.set_ylim(-1.2 * L, 0.2 * L)
-    ax_pendulo.axis("equal")
+    ax_pendulo.set_aspect("equal", adjustable="box")
+    ax_pendulo.set_autoscale_on(False)
     ax_pendulo.grid(alpha=0.3)
     ax_pendulo.scatter([0.0], [0.0], color="black", s=30, label="pivo")
 
@@ -138,6 +139,8 @@ def animar_comparacao(theta_euler, theta_rk4):
     ax_theta.legend(loc="upper right")
 
     def init():
+        ax_pendulo.set_xlim(-1.2 * L, 1.2 * L)
+        ax_pendulo.set_ylim(-1.2 * L, 0.2 * L)
         haste_euler.set_data([], [])
         massa_euler.set_data([], [])
         haste_rk4.set_data([], [])
@@ -147,6 +150,8 @@ def animar_comparacao(theta_euler, theta_rk4):
         return haste_euler, massa_euler, haste_rk4, massa_rk4, linha_euler, linha_rk4
 
     def update(frame):
+        ax_pendulo.set_xlim(-1.2 * L, 1.2 * L)
+        ax_pendulo.set_ylim(-1.2 * L, 0.2 * L)
         haste_euler.set_data([0.0, x_euler[frame]], [0.0, y_euler[frame]])
         massa_euler.set_data([x_euler[frame]], [y_euler[frame]])
         haste_rk4.set_data([0.0, x_rk4[frame]], [0.0, y_rk4[frame]])
