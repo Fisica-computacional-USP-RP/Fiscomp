@@ -9,6 +9,9 @@ Computational physics materials for teaching numerical simulation in an introduc
 - `massa_mola/`
   - `massa_mola.py`
   - `massa_mola.ipynb`
+- `investimentos_simples/`
+  - `investimentos_simples.py`
+  - `investimentos_simples.ipynb`
 
 ## Each model includes
 1. Euler simulation
@@ -18,4 +21,5 @@ Computational physics materials for teaching numerical simulation in an introduc
 
 ## Notes
 - The `.py` files are intentionally documented in PT-BR.
-- Notebooks and repository documentation are in English.
+- Notebooks may be written in English or PT-BR, depending on the teaching module.
+- The investment module starts with a short didactic simulator based on annual rates and monthly contributions.

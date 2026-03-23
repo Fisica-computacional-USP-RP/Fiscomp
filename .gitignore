@@ -18,3 +18,8 @@ venv/
 
 # Dados temporarios
 *.tmp
+
+# LaTeX / compilacao local
+_tmp_tectonic/
+apostila_investimentos/.tectonic-cache/
+apostila_investimentos/build/
