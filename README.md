@@ -9,6 +9,10 @@ Computational physics materials for teaching numerical simulation in an introduc
 - `massa_mola/`
   - `massa_mola.py`
   - `massa_mola.ipynb`
+- `caminhadas_aleatorias/`
+  - `caminhadas_aleatorias.ipynb`
+- `redes_complexas/`
+  - `redes_complexas.ipynb`
 - `investimentos_simples/`
   - `investimentos_simples.py`
   - `investimentos_simples.ipynb`
@@ -23,3 +27,4 @@ Computational physics materials for teaching numerical simulation in an introduc
 - The `.py` files are intentionally documented in PT-BR.
 - Notebooks may be written in English or PT-BR, depending on the teaching module.
 - The investment module starts with a short didactic simulator based on annual rates and monthly contributions.
+- The Colab-ready notebooks are stored without execution outputs to keep direct GitHub and Colab loading lighter.
